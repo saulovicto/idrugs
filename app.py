@@ -30,8 +30,15 @@ CORS(app)
 # CONFIGURAÇÕES
 # ─────────────────────────────────────────────
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'sgef_secret_key_2024')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'DATABASE_URL', 'postgresql://postgres:ewq321ytr654@localhost:5432/idrugs')
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///local.db')
+
+# Render usa "postgres://" mas SQLAlchemy moderno exige "postgresql://"
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # ── Cloudinary — hospedagem de imagens ──────────────────────────
